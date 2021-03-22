@@ -3,10 +3,29 @@ require('dotenv').config();
 const app = express()
 const port = 5000
 const mongoose = require('mongoose')
-mongoose.connect(`mongodb+srv://ahn:${process.env.MONGODB_PASSWORD}@cluster0.as847.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`, {
-    useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindandModify: false
-}).then(() => console.log('mongoose connected'))
-    .catch(err => console.log(err))
+const config = require("./config/key");
+const connect = mongoose.connect(config.mongoURI,
+    {
+        useNewUrlParser: true, useUnifiedTopology: true,
+        useCreateIndex: true, useFindAndModify: false
+    })
+    .then(() => console.log('MongoDB Connected...'))
+    .catch(err => console.log(err));
+
 
 app.get('/', (req, res) => res.send('hello_world'))
+
+app.post("/register", (req, res) => {
+
+    const user = new User(req.body);
+
+    user.save((err, userInfo) => {
+        if (err) return res.json({ success: false, err });
+        return res.status(200).json({
+            success: true
+        });
+    });
+});
+
 app.listen(port, () => console.log(`Example app port ${port}`))
+
