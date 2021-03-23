@@ -2,7 +2,7 @@
 /build
 /.env
 dev.js
-
+client
 
 
 .DS_Store
