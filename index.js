@@ -22,7 +22,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 
-app.post("user/register", (req, res) => {
+app.post("/user/register", (req, res) => {
     const user = new User(req.body);
     user.save((err, userInfo) => {
         if (err) return res.json({ success: false, err });
@@ -32,7 +32,7 @@ app.post("user/register", (req, res) => {
     });
 });
 
-app.post('user/login', (req, res) => {
+app.post('/user/login', (req, res) => {
     User.findOne({ email: req.body.email }, (err, user) => {
         if (!user) return res.json({
             loginSuccess: false,
@@ -50,7 +50,7 @@ app.post('user/login', (req, res) => {
     });
 });
 
-app.get("/auth", auth, (req, res) => {
+app.get("/user/auth", auth, (req, res) => {
     res.status(200).json({
         _id: req.user._id,
         isAdmin: req.user.role === 0 ? false : true,
@@ -60,6 +60,15 @@ app.get("/auth", auth, (req, res) => {
         lastname: req.user.lastname,
         role: req.user.role,
         image: req.user.image,
+    });
+});
+
+app.get("/user/logout", auth, (req, res) => {
+    User.findOneAndUpdate({ _id: req.user._id }, { token: "", tokenExp: "" }, (err, doc) => {
+        if (err) return res.json({ success: false, err });
+        return res.status(200).send({
+            success: true
+        });
     });
 });
 
