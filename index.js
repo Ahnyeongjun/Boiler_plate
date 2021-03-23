@@ -7,6 +7,7 @@ const config = require("./config/key");
 const { User } = require("./model/User")
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
+const { auth } = require("./middleware/auth");
 
 const connect = mongoose.connect(config.mongoURI,
     {
@@ -20,9 +21,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-app.get('/', (req, res) => res.send('hello_world'))
 
-app.post("/register", (req, res) => {
+app.post("user/register", (req, res) => {
     const user = new User(req.body);
     user.save((err, userInfo) => {
         if (err) return res.json({ success: false, err });
@@ -32,7 +32,7 @@ app.post("/register", (req, res) => {
     });
 });
 
-app.post('/login', (req, res) => {
+app.post('user/login', (req, res) => {
     User.findOne({ email: req.body.email }, (err, user) => {
         if (!user) return res.json({
             loginSuccess: false,
@@ -49,4 +49,18 @@ app.post('/login', (req, res) => {
         });
     });
 });
+
+app.get("/auth", auth, (req, res) => {
+    res.status(200).json({
+        _id: req.user._id,
+        isAdmin: req.user.role === 0 ? false : true,
+        isAuth: true,
+        email: req.user.email,
+        name: req.user.name,
+        lastname: req.user.lastname,
+        role: req.user.role,
+        image: req.user.image,
+    });
+});
+
 app.listen(port, () => console.log(`Example app port ${port}`))
