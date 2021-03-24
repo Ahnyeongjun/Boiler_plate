@@ -1,13 +1,16 @@
 const { User } = require("../../model/user");
+const mkToken = require("./mkToken");
 
 
 const register = async (req, res) => {
 
     const user = new User(req.body);
     try {
-        const findUser = await User.findOne({ email: req.body.email });
+        const findUser = await User.findOne({ email: user.email });
         if (findUser) return res.status(400).end();
-        user.save();
+
+        user.password = user.passwordEncoding({ password: user.password })
+        await user.save();
     } catch (err) {
         console.log(err);
         res.status(400).end();
@@ -16,24 +19,33 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-    try {
-        user = await User.findOne({ email: req.body.email });
-        if (!user) return res.status(400).end();
-        isMatch = await user.comparePassword(req.body.password)
-        if (isMatch) return res.status(400).end();
-        user = await user.generateToken;
+    const { email, password } = req.body;
 
-        res.cookie("x_auth", user.token)
-            .status(200)
-            .json({ loginSuccess: true, userId: user._id })
+    try {
+        const findUser = await User.findOne({ email: email });
+        if (!findUser) return res.status(400).end();
+        if (!(findUser.comparePassword(password, findUser.password))) return res.status(400).end();
+        const accessToken = await mkToken.mkAccess(req, findUser);
+        const refreshToken = await mkToken.mkRefresh(req, findUser);
+
+        res.status(200).json({ accessToken, refreshToken });
     } catch (err) {
         console.log(err);
+
         res.status(400).end();
     }
 };
 
+const refresh = async (req, res, next) => {
+    const user = await User.findOne(req.email);
+    const accessToken = await mkToken.mkAccess(req, user);
+    res.status(200).json({ accessToken });
+};
+// const logout = async (req, res)=>{
 
+// };
 module.exports = {
     register,
     login,
+    refresh,
 }

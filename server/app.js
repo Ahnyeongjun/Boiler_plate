@@ -20,6 +20,9 @@ app.use(cookieParser());
 
 app.use('/', require('./routes'));
 
+app.set("jwt-secret", process.env.JWT_SECRET);
+app.set("refresh-secret", process.env.REFRESH_SECRET);
+
 const port = process.env.PORT || 5000
 app.listen(port, () => {
     console.log(`Server Listening on ${port}`)

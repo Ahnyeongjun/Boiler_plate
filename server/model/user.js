@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
+const bcrypt = require('bcrypt-nodejs');
 const jwt = require('jsonwebtoken');
 
 const userSchema = mongoose.Schema({
@@ -26,46 +25,14 @@ const userSchema = mongoose.Schema({
         default: 0
     },
     image: String,
-    token: {
-        type: String,
-    },
-    tokenExp: {
-        type: Number
-    }
 })
 
-userSchema.pre('save', next => {
-    var user = this;
-    try {
-        if (user.isModified('password')) {
-            // console.log('password changed')
-            const salt = bcrypt.genSalt(saltRounds);
+userSchema.methods.passwordEncoding = password => {
+    return bcrypt.hashSync(password.password);;
+};
 
-            const hash = bcrypt.hash(user.password, salt);
-            user.password = hash;
-
-        }
-        next()
-
-    }
-    catch (err) {
-        res.status(400).end();
-    }
-})
-
-userSchema.methods.comparePassword = function (plainPassword) {
-    return isMatch = bcrypt.compare(plainPassword, this.password)
-}
-userSchema.methods.generateToken = () => {
-    var user = this;
-    console.log('user', user)
-    console.log('userSchema', userSchema)
-    var token = jwt.sign(user._id.toHexString(), 'secret')
-    var oneHour = moment().add(1, 'hour').valueOf();
-
-    user.tokenExp = oneHour;
-    user.token = token;
-    user.save(user)
+userSchema.methods.comparePassword = async (password, encoded) => {
+    return bcrypt.compareSync(password, encoded);
 }
 
 const User = mongoose.model('User', userSchema);

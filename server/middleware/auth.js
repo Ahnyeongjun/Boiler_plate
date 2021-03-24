@@ -1,20 +1,38 @@
-const { User } = require('../model/User');
+const jwt = require("jsonwebtoken");
 
-let auth = (req, res, next) => {
-    let token = req.cookies.w_auth;
-
-    User.findByToken(token, (err, user) => {
-        if (err) throw err;
-        if (!user)
-            return res.json({
-                isAuth: false,
-                error: true
-            });
-
-        req.token = token;
-        req.user = user;
-        next();
+const authMiddleware = async (req, res, next) => {
+  const token = req.headers["access-token"];
+  if (!token) {
+    res.status(403).json({ message: "token required" });
+  }
+  try {
+    await jwt.verify(token, req.app.get("jwt-secret"), (err, decoded) => {
+      if (err) throw new Error(err);
+      req.decoded = decoded;
+      next();
     });
+  } catch (e) {
+    res.status(401).json({ message: e.message });
+  }
 };
 
-module.exports = { auth };
+const refreshMiddleware = async (req, res, next) => {
+  const token = req.headers["refresh-token"];
+  if (!token) {
+    res.status(403).json({ message: "token required" });
+  }
+  try {
+    await jwt.verify(token, req.app.get("refresh-secret"), (err, decoded) => {
+      if (err) throw new Error(err);
+      req.decoded = decoded;
+      next();
+    });
+  } catch (e) {
+    res.status(401).json({ message: e.message });
+  }
+};
+
+module.exports = {
+  authMiddleware,
+  refreshMiddleware,
+};
