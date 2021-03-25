@@ -25,7 +25,6 @@ const login = async (req, res) => {
         const findUser = await User.findOne({ email: email });
         if (!findUser) return res.status(400).end();
         if (!(findUser.comparePassword(password, findUser.password))) return res.status(400).end();
-        // const user = await findUser.generateToken();
         const accessToken = await mkToken.mkAccess(req, findUser);
         const refreshToken = await mkToken.mkRefresh(req, findUser);
 
