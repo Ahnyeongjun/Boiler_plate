@@ -13,6 +13,9 @@ import axios from 'axios';
 //         </>
 //     )
 // }
+const onEmailHandler = (event) => {
+
+}
 
 function LandingPage() {
     useEffect(() => {
@@ -20,7 +23,9 @@ function LandingPage() {
             .then(response => console.log(response.data))
     }, [])
     return (
-        <div>
+        <div style={
+            { display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100vh' }
+        }>
             <h2>LandingPage</h2>
         </div>
     );
