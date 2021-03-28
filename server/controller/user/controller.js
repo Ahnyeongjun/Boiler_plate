@@ -7,7 +7,7 @@ const register = async (req, res) => {
     const user = new User(req.body);
     try {
         const findUser = await User.findOne({ email: user.email });
-        if (findUser) return res.status(400).end();
+        if (findUser) return res.status(409).end();
 
         user.password = user.passwordEncoding({ password: user.password })
         await user.save();
@@ -42,8 +42,14 @@ const refresh = async (req, res, next) => {
     res.status(200).json({ accessToken });
 };
 
+const check = async (req, res, next) => {
+    const user = await User.findOne(req.email);
+    res.status(200).json({ email: user.email });
+};
+
 module.exports = {
     register,
     login,
     refresh,
+    check,
 }
