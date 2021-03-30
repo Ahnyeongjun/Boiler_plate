@@ -47,9 +47,15 @@ const check = async (req, res, next) => {
     res.status(200).json({ email: user.email });
 };
 
+const token = async (req, res, next) => {
+    res.status(200).end();
+
+}
+
 module.exports = {
     register,
     login,
     refresh,
     check,
+    token,
 }
