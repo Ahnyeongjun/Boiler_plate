@@ -36,13 +36,13 @@ const login = async (req, res) => {
 };
 
 const refresh = async (req, res, next) => {
-  const user = await query.findOne(req.decoded.email);
+  const user = await query.findOneByEmail({ email: req.decoded.email });
   const accessToken = await token.mkAccess(req, user);
   res.status(200).json({ accessToken });
 };
 
 const check = async (req, res, next) => {
-  const user = await User.findOne(req.decoded.email);
+  const user = await query.findOneByEmail({ email: req.decoded.email });
   res.status(200).json({ email: user.email });
 };
 
