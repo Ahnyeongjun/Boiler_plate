@@ -11,7 +11,7 @@ const passwordCompare = async (password, encoded) => {
 
 const findOneByEmail = async (email) => {
   try {
-    const user = await User.findOne({ where: { email: email.email } });
+    const user = await User.findOne({ where: { email } });
     return user;
   } catch (e) {
     throw e;

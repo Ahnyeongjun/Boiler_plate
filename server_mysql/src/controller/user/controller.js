@@ -21,7 +21,7 @@ const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const findUser = await query.findOneByEmail({ email: email });
+    const findUser = await query.findOneByEmail(email);
     if (!findUser) return res.status(400).end();
     if (!(query.passwordCompare(password, findUser.password))) return res.status(400).end();
 
@@ -36,13 +36,13 @@ const login = async (req, res) => {
 };
 
 const refresh = async (req, res, next) => {
-  const user = await query.findOneByEmail({ email: req.decoded.email });
+  const user = await query.findOneByEmail(req.decoded.email);
   const accessToken = await token.mkAccess(req, user);
   res.status(200).json({ accessToken });
 };
 
 const check = async (req, res, next) => {
-  const user = await query.findOneByEmail({ email: req.decoded.email });
+  const user = await query.findOneByEmail(req.decoded.email);
   res.status(200).json({ email: user.email });
 };
 
