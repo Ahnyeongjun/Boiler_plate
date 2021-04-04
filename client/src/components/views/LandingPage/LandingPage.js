@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react'
 import axios from 'axios';
+import qs from 'qs';
+
 // import { FaCode } from "react-icons/fa";
 
 // function LandingPage() {
@@ -19,7 +21,12 @@ const onEmailHandler = (event) => {
 
 function LandingPage() {
     useEffect(() => {
-        axios.get('/api/hello')
+        axios.get('http://13.125.199.215:8080/category/tag', {
+            params: { numOfPage: 0, categoryName: ["CHILD", "NONE", "NONE"] },
+            paramsSerializer: params => {
+                return qs.stringify(params, { arrayFormat: 'repeat' })
+            }
+        })
             .then(response => console.log(response.data))
     }, [])
     return (
