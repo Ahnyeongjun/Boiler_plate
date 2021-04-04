@@ -1,10 +1,11 @@
 const { User } = require("../../models");
 const query = require("./query");
+const token = require("./token");
 
 const register = async (req, res) => {
   const { email, password, name } = req.body;
   try {
-    // if (query.findOneByEmail(email)) res.status(409).end();
+    if (query.findOneByEmail(email)) res.status(409).end();
     const encodedPassword = await query.passwordEncoding(password);
     await User.create({ email, password: encodedPassword, name });
 
@@ -15,6 +16,38 @@ const register = async (req, res) => {
   }
 };
 
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const findUser = await query.findOneByEmail({ email: email });
+    if (!findUser) return res.status(400).end();
+    if (!(query.comparePassword(password, findUser.password))) return res.status(400).end();
+
+    const accessToken = await token.mkAccess(req, findUser);
+    const refreshToken = await token.mkRefresh(req, findUser);
+    res.status(200).json({ accessToken, refreshToken });
+  } catch (err) {
+    console.log(err);
+
+    res.status(400).end();
+  }
+};
+
+const refresh = async (req, res, next) => {
+  const user = await query.findOne(req.email);
+  const accessToken = await token.mkAccess(req, user);
+  res.status(200).json({ accessToken });
+};
+
+const check = async (req, res, next) => {
+  const user = await User.findOne(req.email);
+  res.status(200).json({ email: user.email });
+};
+
 module.exports = {
   register,
+  login,
+  refresh,
+  check,
 };
