@@ -1,0 +1,35 @@
+{
+  "name": "koa_boilerplate",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@koa/cors": "^3.1.0",
+    "@koa/router": "^10.1.0",
+    "jsonwebtoken": "^8.5.1",
+    "koa": "^2.13.1",
+    "koa-body": "^4.2.0",
+    "koa-helmet": "^6.1.0",
+    "koa-logger": "^3.2.1",
+    "koa-router": "^10.0.0",
+    "mysql": "^2.18.1",
+    "ts-node": "^10.1.0",
+    "typeorm": "^0.2.34",
+    "typescript": "^4.3.5"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^8.5.4",
+    "@types/koa-logger": "^3.1.1",
+    "@types/koa-router": "^7.4.4",
+    "@types/koa__cors": "^3.0.3",
+    "@types/koa__router": "^8.0.7",
+    "@types/node": "^16.4.3",
+    "@typescript-eslint/eslint-plugin": "^4.28.5",
+    "@typescript-eslint/parser": "^4.28.5",
+    "eslint": "^7.31.0"
+  },
+  "scripts": {
+    "start": "nodemon  --exec ts-node src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
